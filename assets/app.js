@@ -93,6 +93,7 @@ function render() {
   if (route === "p" && arg)  return renderDetail(arg);
   if (route === "new")       return renderCompose();
   if (route === "track")     return renderDashboard();
+  if (route === "event" && arg) return renderEventDetail(arg);
   if (route === "events")    return renderEvents(arg);
   if (route === "visa")      return renderVisa(arg);
   return renderFeed(route === "c" ? arg : null);
@@ -167,6 +168,18 @@ function renderFeed(catId) {
     a.href = `#/c/${c.id}`; mcats.appendChild(a);
   });
   feed.appendChild(mcats);
+
+  // mobile-only visa calculator banner — same spot on every community view
+  // (all categories + home): right after the tiles divider, before the header.
+  {
+    const vb = el("a", "visa-banner");
+    vb.href = "#/visa";
+    vb.innerHTML = `<span class="visa-banner__ico">🛂</span>
+      <span class="visa-banner__tx"><span class="visa-banner__t">내 비자 점수, 3분이면 끝</span>
+      <span class="visa-banner__s">D-10 · E-7-4 · F-2-7 실시간 계산</span></span>
+      <span class="visa-banner__go">${IC.chevR}</span>`;
+    feed.appendChild(vb);
+  }
 
   // header
   if (cat) {
@@ -454,8 +467,12 @@ function renderDashboard() {
 }
 
 /* --------------------------------------------------------------- EVENTS */
+const EV_STATUS = { ongoing: "진행중", upcoming: "예정" };
+
+function eventGradient(e) { return `linear-gradient(135deg, ${e.color}, ${e.accent || e.color})`; }
+
 function renderEvents() {
-  const list = EVENTS.filter((e) => !e.ended);
+  const list = EVENTS.filter((e) => e.status !== "ended");
 
   app.innerHTML = "";
   const wrap = el("div", "wrap");
@@ -467,32 +484,30 @@ function renderEvents() {
     <div class="events__hero">
       <div class="events__ey">🎟️ Bravo Korea Events</div>
       <h1 class="events__title">진행 중인 이벤트</h1>
-      <p class="events__sub">외국인들을 위한 밋업 · 클래스 · 세미나. 마음에 드는 이벤트에 참가하고, 더 많은 소식은 앱에서 받아보세요.</p>
+      <p class="events__sub">Bravo Korea가 준비한 해외송금 · 금융 혜택과 프로모션. 마음에 드는 혜택을 앱에서 바로 받아보세요.</p>
     </div>
     <div class="evt-grid" id="evt-grid"></div>`;
 
   const grid = page.querySelector("#evt-grid");
-  if (!list.length) grid.appendChild(el("div", "empty", `<div class="empty__em">🗓️</div>표시할 이벤트가 없어요.`));
+  if (!list.length) grid.appendChild(el("div", "empty", `<div class="empty__em">🗓️</div>진행 중인 이벤트가 없어요.`));
   list.forEach((e) => {
-    const pct = Math.min(100, Math.round((e.going / e.cap) * 100));
     const card = el("article", "evt-card");
     card.innerHTML = `
-      <div class="evt-card__banner" style="background:linear-gradient(135deg, ${e.color}, ${e.color}CC)">
-        <span class="evt-card__emoji">${e.emoji}</span>
+      <div class="evt-card__banner" style="background:${eventGradient(e)}">
         <span class="evt-card__type">${esc(e.type)}</span>
-        <span class="evt-card__price">${esc(e.price)}</span>
+        <span class="evt-card__status">${EV_STATUS[e.status] || "진행중"}</span>
+        <span class="evt-card__badge">${esc(e.badge)}</span>
       </div>
       <div class="evt-card__body">
-        <div class="evt-card__date">📅 ${esc(e.date)} · ${esc(e.time)}</div>
         <h3 class="evt-card__title">${esc(e.title)}</h3>
-        <div class="evt-card__place">📍 ${esc(e.place)}</div>
-        <p class="evt-card__desc">${esc(e.desc)}</p>
-        <div class="evt-card__meter"><i style="width:${pct}%;background:${e.color}"></i></div>
+        <p class="evt-card__desc">${esc(e.summary)}</p>
+        <div class="evt-card__metaline">📅 ${esc(e.period)}</div>
         <div class="evt-card__foot">
-          <span class="evt-card__going"><b>${e.going}</b> / ${e.cap} 참가</span>
-          <a class="btn btn--blue btn--sm" href="${APP_DEEPLINK}?event_id=${e.id}" target="_blank" rel="noopener">앱에서 참가</a>
+          <span class="evt-card__partner">제휴 · ${esc(e.partner)}</span>
+          <span class="btn btn--blue btn--sm">자세히 보기 ${IC.chevR}</span>
         </div>
       </div>`;
+    card.onclick = () => location.hash = `#/event/${e.id}`;
     grid.appendChild(card);
   });
 
@@ -500,6 +515,46 @@ function renderEvents() {
   wrap.appendChild(layout);
   app.appendChild(wrap);
   app.appendChild(footEl());
+}
+
+/* ----------------------------------------------------- EVENT DETAIL */
+function renderEventDetail(id) {
+  const e = EVENTS.find((x) => x.id === id);
+  if (!e) { location.hash = "#/events"; return; }
+
+  app.innerHTML = "";
+  const d = el("article", "center evd");
+  d.innerHTML = `
+    <a class="back-link" href="#/events">${IC.back} 이벤트 목록</a>
+    <div class="evd__hero" style="background:${eventGradient(e)}">
+      <div class="evd__pills">
+        <span class="evd__type">${esc(e.type)}</span>
+        <span class="evd__status">${EV_STATUS[e.status] || "진행중"}</span>
+      </div>
+      <div class="evd__badge">${esc(e.badge)}</div>
+      <h1 class="evd__title">${esc(e.title)}</h1>
+      <div class="evd__partner">제휴 · ${esc(e.partner)}</div>
+    </div>
+
+    <dl class="evd__facts">
+      <div class="evd__fact"><dt>📅 이벤트 기간</dt><dd>${esc(e.period)}</dd></div>
+      <div class="evd__fact"><dt>🎯 이벤트 대상</dt><dd>${esc(e.target)}</dd></div>
+      <div class="evd__fact"><dt>💸 이벤트 내용</dt><dd class="evd__hl">${esc(e.highlight)}</dd></div>
+    </dl>
+
+    <div class="evd__body">${e.content.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
+
+    <a class="btn btn--blue btn--full evd__cta" href="${APP_DEEPLINK}?event_id=${e.id}" target="_blank" rel="noopener">${esc(e.cta)} ${IC.chevR}</a>
+
+    <section class="evd__notes">
+      <h4>📌 꼭 확인해 주세요</h4>
+      <ul>${e.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
+    </section>
+
+    <p class="evd__legal">본 이벤트는 Bravo Korea가 제공하며, 제휴사 <b>${esc(e.partner)}</b>와 함께 진행됩니다. 혜택 내용과 조건은 사정에 따라 변경될 수 있으며, 최신 정보는 앱 내 이벤트 페이지를 기준으로 합니다.</p>`;
+
+  app.appendChild(d);
+  app.appendChild(footEl(true));
 }
 
 /* --------------------------------------------------------------- shared */
@@ -556,8 +611,8 @@ function buildDrawer() {
   });
   html += `<div class="drawer__sec">이벤트</div>
     <a class="drawer__item" href="#/events/ongoing" data-dnav="ev:ongoing"><span class="drawer__ico" style="background:#FFEEDF;color:var(--brand-orange)">🎟️</span>진행 중 이벤트</a>
-    <div class="drawer__sec">Tools</div>
-    <a class="drawer__item" href="#/visa" data-dnav="visa"><span class="drawer__ico" style="background:#E6F4FF;color:var(--brand-blue)">🛂</span>Visa Calculator</a>
+    <div class="drawer__sec">도구</div>
+    <a class="drawer__item" href="#/visa" data-dnav="visa"><span class="drawer__ico" style="background:#E6F4FF;color:var(--brand-blue)">🛂</span>비자점수계산기</a>
     <a class="btn btn--blue btn--full drawer__app" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the app ${IC.chevR}</a>`;
   nav.innerHTML = html;
   nav.querySelectorAll("a[href^='#/']").forEach((a) => a.addEventListener("click", closeDrawer));

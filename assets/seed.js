@@ -37,38 +37,86 @@ const SUBTABS = {
 /* Minutes-ago helper so seed timestamps feel alive without Date.now in module scope */
 const MIN = 60 * 1000;
 
-/* ---------------------------------------------------------------- events */
+/* ----------------------------------------------------------------- events
+   Bravo Korea 이벤트 = 앱 핵심 서비스(해외송금·금융) 혜택/프로모션 모델.
+   card + detail 공용 스키마:
+     type      혜택 유형 라벨 (송금 혜택 / 신규 혜택 / 추천 리워드 …)
+     status    ongoing | upcoming
+     color/accent  히어로·배너 그라디언트 색
+     badge     혜택 한 줄 강조 (배너·히어로 대형 문구)
+     summary   카드 요약  ·  highlight  상세 '이벤트 내용' 핵심
+     period/target/partner/cta/content[]/notes[]                             */
 const EVENTS = [
-  { id: "ev1", emoji: "🗣️", type: "언어교환", color: "#FF7A00",
-    title: "Seoul Language Exchange Night", date: "7월 12일 (토)", time: "저녁 7:00",
-    place: "홍대 · Hongdae Cafe Lounge", price: "무료",
-    desc: "한국어 반, 영어 반. 초보 대환영이에요. 편하게 와서 새로운 친구를 만들어 보세요.",
-    going: 128, cap: 150 },
-  { id: "ev2", emoji: "💃", type: "클래스", color: "#FF4D8D",
-    title: "K-Pop Dance Class — Beginner", date: "7월 13일 (일)", time: "오후 2:00",
-    place: "강남 · Def Dance Studio", price: "₩20,000",
-    desc: "이번 달 곡은 NewJeans. 안무 경험 전혀 없어도 한 시간이면 한 소절은 춥니다.",
-    going: 42, cap: 45 },
-  { id: "ev3", emoji: "📋", type: "세미나", color: "#1B4DFF",
-    title: "Visa & Immigration Q&A Seminar", date: "7월 16일 (수)", time: "저녁 7:30",
-    place: "온라인 + 이태원 라운지", price: "무료",
-    desc: "D-2 → D-10 전환, F-비자, 세금까지. 행정사와 함께하는 실전 Q&A 세션.",
-    going: 87, cap: 200 },
-  { id: "ev4", emoji: "🧺", type: "모임", color: "#0FB5A6",
-    title: "Han River Picnic & Chimaek", date: "7월 19일 (토)", time: "오후 4:00",
-    place: "여의도 한강공원 3번 출구", price: "무료",
-    desc: "돗자리, 나눠 먹을 간식만 챙겨오세요. 노란 풍선을 찾으면 됩니다. 치맥은 자유!",
-    going: 213, cap: 250 },
-  { id: "ev5", emoji: "💼", type: "커리어", color: "#00A676",
-    title: "Foreigner Job Fair 2026", date: "7월 22일 (화)", time: "오전 10:00",
-    place: "삼성 · COEX Hall C", price: "무료",
-    desc: "IT·스타트업·교육 40개 기업 부스. 영문 이력서 20부는 챙겨오는 걸 추천해요.",
-    going: 356, cap: 500 },
-  { id: "ev6", emoji: "🏔️", type: "아웃도어", color: "#8AB800",
-    title: "Bukhansan Sunrise Hike", date: "7월 27일 (일)", time: "새벽 5:00",
-    place: "북한산 우이역 집결", price: "무료",
-    desc: "정상에서 보는 서울 일출. 중급 난이도, 물과 등산화 필수. 하산 후 해장국 있어요.",
-    going: 64, cap: 80 },
+  {
+    id: "remit-fee-zero",
+    type: "송금 혜택", status: "ongoing",
+    color: "#2E6BF6", accent: "#1E56DC",
+    badge: "송금 수수료 0원",
+    title: "100만원 이상 보내면, 해외송금 수수료 0원!",
+    summary: "기간 내 100만원 이상 한 번만 보내면, 이후 송금은 몇 번을 보내도 수수료가 100% 무료.",
+    period: "2026.07.01 ~ 2026.08.31",
+    target: "Bravo Korea 앱으로 해외송금하는 외국인 고객",
+    partner: "Jeonbuk Bank",
+    highlight: "송금 수수료 100% 무료",
+    cta: "무료로 송금하기",
+    content: [
+      "이벤트 기간 중 100만원 이상을 한 번 송금하시면, 이후에는 보내는 횟수와 금액에 관계없이 Bravo Korea 송금 수수료가 전액 무료입니다.",
+      "별도 신청 절차 없이 조건을 충족하면 자동으로 수수료가 면제됩니다. 첫 송금부터 바로 혜택을 받아보세요.",
+    ],
+    notes: [
+      "본 이벤트는 Bravo Korea와 제휴사(Jeonbuk Bank)의 사정에 따라 사전 고지 없이 변경되거나 조기 종료될 수 있습니다.",
+      "수수료 무료는 Bravo Korea 송금 수수료에 한하며, 중계·수취 은행 수수료 및 환율 스프레드는 포함되지 않을 수 있습니다.",
+      "100만원 기준은 이벤트 기간 내 1회 이상 송금액을 의미합니다.",
+      "1인 1계정 기준이며, 부정 이용이 확인될 경우 혜택 제공이 제한될 수 있습니다.",
+      "자세한 조건은 앱 내 이벤트 상세 페이지에서 확인해 주세요.",
+    ],
+  },
+  {
+    id: "first-transfer-fx",
+    type: "신규 혜택", status: "ongoing",
+    color: "#0FB5A6", accent: "#0A8F84",
+    badge: "환율 우대 100%",
+    title: "첫 해외송금, 환율 우대 100%",
+    summary: "Bravo Korea에서 처음 송금하는 분께 첫 거래 환율 우대 100%를 드려요.",
+    period: "2026.07.01 ~ 2026.09.30",
+    target: "Bravo Korea 앱에서 첫 해외송금하는 신규 고객",
+    partner: "Bravo Korea",
+    highlight: "첫 송금 환율 우대 100%",
+    cta: "지금 첫 송금하기",
+    content: [
+      "Bravo Korea 가입 후 첫 해외송금 시, 적용 환율에 대한 우대 혜택을 100% 제공합니다.",
+      "가입 → 본인 인증 → 첫 송금까지 5분이면 충분합니다.",
+    ],
+    notes: [
+      "신규 고객(첫 해외송금 1회)에 한해 적용됩니다.",
+      "환율 우대 폭은 통화 및 시장 상황에 따라 달라질 수 있습니다.",
+      "본 이벤트는 사전 고지 없이 변경 또는 종료될 수 있습니다.",
+      "자세한 조건은 앱 내 이벤트 상세 페이지에서 확인해 주세요.",
+    ],
+  },
+  {
+    id: "invite-reward",
+    type: "추천 리워드", status: "ongoing",
+    color: "#FF6400", accent: "#E25500",
+    badge: "1명당 5,000원",
+    title: "친구 초대하고 5,000원 받기",
+    summary: "초대한 친구가 첫 송금을 완료하면, 나와 친구 모두에게 5,000원 리워드.",
+    period: "상시 진행",
+    target: "Bravo Korea 회원 누구나",
+    partner: "Bravo Korea",
+    highlight: "초대 1명당 5,000원 (무제한)",
+    cta: "친구 초대하기",
+    content: [
+      "내 초대 링크로 가입한 친구가 첫 해외송금을 완료하면, 나와 친구 모두에게 5,000원 리워드를 드립니다.",
+      "초대 인원에는 제한이 없어요. 많이 초대할수록 리워드도 함께 쌓입니다.",
+    ],
+    notes: [
+      "리워드는 친구의 첫 송금이 정상 완료된 후 지급됩니다.",
+      "동일인 중복 가입 등 부정 이용이 확인되면 리워드가 회수될 수 있습니다.",
+      "리워드 지급 방식·금액은 사정에 따라 변경될 수 있습니다.",
+      "자세한 조건은 앱 내 이벤트 상세 페이지에서 확인해 주세요.",
+    ],
+  },
 ];
 
 const SEED_POSTS = [
