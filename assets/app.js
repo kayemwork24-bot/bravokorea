@@ -158,6 +158,13 @@ function renderFeed(catId) {
 
   const feed = el("section", "feed");
 
+  // mobile hero banner (og image) — above category tiles, mobile only; taps through to the app
+  const hero = el("a", "mhero");
+  hero.href = APP_DEEPLINK; hero.target = "_blank"; hero.rel = "noopener";
+  hero.setAttribute("aria-label", "Bravo Korea — get the app");
+  hero.innerHTML = `<img src="assets/og.png?v=19" alt="Bravo Korea — community for foreigners living in Korea" width="1200" height="630" loading="eager">`;
+  feed.appendChild(hero);
+
   // mobile category tiles
   const mcats = el("div", "mcats");
   const allTile = el("a", "mtile", `<div class="mtile__ico" style="background:${cat?'':'var(--blue-tint)'};${cat?'':'color:var(--blue)'}">🏠</div><div class="mtile__lab">전체</div>`);
@@ -286,6 +293,10 @@ function renderDetail(id) {
     </div>
     <div class="detail__body">${p.body.split("\n\n").map(par=>`<p>${esc(par)}</p>`).join("")}</div>
     ${media}
+    <div class="sharebar">
+      <div class="sharebar__h">이 글 공유하기 <span>Share</span></div>
+      ${shareRowHTML()}
+    </div>
     <div class="cta-band">
       <div class="app-logo">${BRAND_LOGO}</div>
       <div class="cta-band__h">Loved this? The conversation continues in the app.</div>
@@ -299,6 +310,7 @@ function renderDetail(id) {
     </div>`;
   d.querySelector("[data-like]").onclick = () => { toggleLike(p.id); renderDetail(id); };
   d.querySelector("[data-share]").onclick = () => openShare(p);
+  d.querySelectorAll(".shbtn").forEach(b => b.onclick = () => shareTo(b.dataset.ch, p));
   const cover = d.querySelector(".cover");
   if (cover) cover.onclick = () => { cover.parentElement.innerHTML = `<iframe src="https://www.youtube.com/embed/${cover.dataset.yt}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`; };
   app.appendChild(d);
@@ -503,7 +515,7 @@ function renderEvents() {
         <p class="evt-card__desc">${esc(e.summary)}</p>
         <div class="evt-card__metaline">📅 ${esc(e.period)}</div>
         <div class="evt-card__foot">
-          <span class="evt-card__partner">제휴 · ${esc(e.partner)}</span>
+          <span class="evt-card__partner">${esc(e.provider)}</span>
           <span class="btn btn--blue btn--sm">자세히 보기 ${IC.chevR}</span>
         </div>
       </div>`;
@@ -518,9 +530,34 @@ function renderEvents() {
 }
 
 /* ----------------------------------------------------- EVENT DETAIL */
+function evStepsHtml(steps) {
+  return `<ol class="evd__steps">${steps.map((s) =>
+    `<li class="evd__step"><div class="evd__step-t">${esc(s.title)}</div>${
+      s.desc ? `<div class="evd__step-d">${esc(s.desc)}</div>` : ""}</li>`).join("")}</ol>`;
+}
+
 function renderEventDetail(id) {
   const e = EVENTS.find((x) => x.id === id);
   if (!e) { location.hash = "#/events"; return; }
+
+  const stepsHtml = (e.steps && e.steps.length) ? `
+    <div class="evd__sec">
+      <div class="evd__sec-h">📝 이벤트 참여 방법</div>
+      ${evStepsHtml(e.steps)}
+    </div>` : "";
+
+  const extraHtml = e.extra ? `
+    <div class="evd__extra">
+      <div class="evd__extra-h">🎁 ${esc(e.extra.title)}</div>
+      ${evStepsHtml(e.extra.steps)}
+      ${e.extra.code ? `<div class="evd__code"><span>추천인 코드</span><b>${esc(e.extra.code)}</b></div>` : ""}
+    </div>` : "";
+
+  const notesHtml = (e.noteGroups || []).map((g) => `
+    <section class="evd__notes">
+      <h4>📌 ${esc(g.title)}</h4>
+      <ul>${g.items.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
+    </section>`).join("");
 
   app.innerHTML = "";
   const d = el("article", "center evd");
@@ -533,7 +570,7 @@ function renderEventDetail(id) {
       </div>
       <div class="evd__badge">${esc(e.badge)}</div>
       <h1 class="evd__title">${esc(e.title)}</h1>
-      <div class="evd__partner">제휴 · ${esc(e.partner)}</div>
+      <div class="evd__partner">${esc(e.provider)}</div>
     </div>
 
     <dl class="evd__facts">
@@ -543,15 +580,11 @@ function renderEventDetail(id) {
     </dl>
 
     <div class="evd__body">${e.content.map((p) => `<p>${esc(p)}</p>`).join("")}</div>
-
+    ${stepsHtml}
     <a class="btn btn--blue btn--full evd__cta" href="${APP_DEEPLINK}?event_id=${e.id}" target="_blank" rel="noopener">${esc(e.cta)} ${IC.chevR}</a>
-
-    <section class="evd__notes">
-      <h4>📌 꼭 확인해 주세요</h4>
-      <ul>${e.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>
-    </section>
-
-    <p class="evd__legal">본 이벤트는 Bravo Korea가 제공하며, 제휴사 <b>${esc(e.partner)}</b>와 함께 진행됩니다. 혜택 내용과 조건은 사정에 따라 변경될 수 있으며, 최신 정보는 앱 내 이벤트 페이지를 기준으로 합니다.</p>`;
+    ${extraHtml}
+    ${notesHtml}
+    <p class="evd__legal">${esc(e.legal || "")}</p>`;
 
   app.appendChild(d);
   app.appendChild(footEl(true));
