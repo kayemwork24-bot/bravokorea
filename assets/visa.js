@@ -98,6 +98,8 @@ function renderVisa(arg) {
 
   const app = vApp(); app.innerHTML = "";
   const wrap = vEl("div", "wrap");
+  const banner = vizEventBanner();
+  if (banner) wrap.appendChild(banner);
   const layout = vEl("div", "viz");
   layout.appendChild(vizForm());
   layout.appendChild(vEl("div", "viz-scores-wrap", `<div id="viz-scores"></div>`));
@@ -105,6 +107,47 @@ function renderVisa(arg) {
   app.appendChild(wrap);
   bindStep();
   updateScores();
+}
+
+/* --------------------------------------- event promo (sliding banner) */
+let vizBannerTimer = null;
+function vizEventBanner() {
+  if (typeof EVENTS === "undefined") return null;
+  const list = EVENTS.filter((e) => e.status !== "ended");
+  if (!list.length) return null;
+
+  const grad = (e) => `linear-gradient(135deg, ${e.color}, ${e.accent || e.color})`;
+  const box = vEl("div", "viz-promo");
+  box.innerHTML = `
+    <div class="viz-promo__track">
+      ${list.map((e, i) => `
+        <a class="viz-promo__slide ${i===0?"on":""}" data-i="${i}" href="#/event/${e.id}"
+           style="background:${grad(e)}">
+          <span class="viz-promo__type">${vEsc(e.type)}</span>
+          <b class="viz-promo__badge">${vEsc(e.badge)}</b>
+          <span class="viz-promo__title">${vEsc(e.promo || e.badge)} <span class="viz-promo__go">›</span></span>
+        </a>`).join("")}
+    </div>
+    ${list.length > 1 ? `<div class="viz-promo__dots">${
+      list.map((_, i) => `<button class="viz-promo__dot ${i===0?"on":""}" data-d="${i}" aria-label="배너 ${i+1}"></button>`).join("")
+    }</div>` : ""}`;
+
+  const slides = box.querySelectorAll(".viz-promo__slide");
+  const dots = box.querySelectorAll(".viz-promo__dot");
+  let cur = 0;
+  const go = (n) => {
+    cur = (n + slides.length) % slides.length;
+    slides.forEach((s, i) => s.classList.toggle("on", i === cur));
+    dots.forEach((d, i) => d.classList.toggle("on", i === cur));
+  };
+  dots.forEach((d) => d.addEventListener("click", (ev) => { ev.preventDefault(); go(+d.dataset.d); restart(); }));
+
+  function restart() {
+    if (vizBannerTimer) clearInterval(vizBannerTimer);
+    if (slides.length > 1) vizBannerTimer = setInterval(() => go(cur + 1), 2000);
+  }
+  restart();
+  return box;
 }
 
 const STEP_META = [

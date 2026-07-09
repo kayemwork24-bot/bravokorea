@@ -162,7 +162,7 @@ function renderFeed(catId) {
   if (!cat) {
     const hero = el("a", "mhero");
     hero.href = APP_DEEPLINK; hero.target = "_blank"; hero.rel = "noopener";
-    hero.setAttribute("aria-label", "Bravo Korea — get the app");
+    hero.setAttribute("aria-label", "Bravo Korea — community for foreigners living in Korea");
     hero.innerHTML = `<img src="assets/og.png?v=19" alt="Bravo Korea — community for foreigners living in Korea" width="1200" height="630" loading="eager">`;
     feed.appendChild(hero);
   }
@@ -252,7 +252,7 @@ function sidebarEl(activeId, activeEvents) {
 
   const app = el("div", "panel panel--app side__app");
   app.innerHTML = `<div class="app-logo">${BRAND_LOGO}</div>
-    <a class="btn btn--white btn--full" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the app ${IC.chevR}</a>`;
+    <a class="btn btn--white btn--full" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Download Bravo Korea App ${IC.chevR}</a>`;
   side.appendChild(app);
   return side;
 }
@@ -679,7 +679,11 @@ function updateActiveNav(route, arg) {
 function buildDrawer() {
   const nav = $("#drawer-nav");
   if (!nav) return;
-  let html = `<div class="drawer__sec">커뮤니티</div>
+  let html = `<a class="drawer__promo" href="${APP_DEEPLINK}" target="_blank" rel="noopener">
+      <span class="drawer__promo-txt"><strong>Bravo Korea</strong><span>Meet us in the App</span></span>
+      <span class="drawer__promo-cta">Download ${IC.chevR}</span>
+    </a>
+    <div class="drawer__sec">커뮤니티</div>
     <a class="drawer__item" href="#/" data-dnav="home"><span class="drawer__ico" style="background:var(--blue-tint);color:var(--blue)">🏠</span>전체 커뮤니티</a>`;
   CATEGORIES.forEach((c) => {
     html += `<a class="drawer__item" href="#/c/${c.id}" data-dnav="c:${c.id}"><span class="drawer__ico" style="background:${c.color}18;color:${c.color}">${c.icon}</span>${esc(c.label)}</a>`;
@@ -688,7 +692,7 @@ function buildDrawer() {
     <a class="drawer__item" href="#/events/ongoing" data-dnav="ev:ongoing"><span class="drawer__ico" style="background:#FFEEDF;color:var(--brand-orange)">🎟️</span>진행 중 이벤트</a>
     <div class="drawer__sec">도구</div>
     <a class="drawer__item" href="#/visa" data-dnav="visa"><span class="drawer__ico" style="background:#E6F4FF;color:var(--brand-blue)">🛂</span>비자점수계산기</a>
-    <a class="btn btn--blue btn--full drawer__app" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the app ${IC.chevR}</a>`;
+    <a class="btn btn--blue btn--full drawer__app" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Download Bravo KoreaApp ${IC.chevR}</a>`;
   nav.innerHTML = html;
   nav.querySelectorAll("a[href^='#/']").forEach((a) => a.addEventListener("click", closeDrawer));
 }
