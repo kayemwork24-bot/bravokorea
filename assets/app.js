@@ -89,10 +89,12 @@ function render() {
   closeSearch();
   closeDrawer();
   updateActiveNav(route, arg);
+  if (route !== "visa" && typeof removeScoreBar === "function") removeScoreBar();
   if (route === "p" && arg)  return renderDetail(arg);
   if (route === "new")       return renderCompose();
   if (route === "track")     return renderDashboard();
   if (route === "events")    return renderEvents(arg);
+  if (route === "visa")      return renderVisa(arg);
   return renderFeed(route === "c" ? arg : null);
 }
 
@@ -541,10 +543,11 @@ $("#search-input").addEventListener("input", (e) => {
 /* ---------------------------------------------- top-nav active state */
 function updateActiveNav(route, arg) {
   const isEvents = route === "events";
+  const isVisa = route === "visa";
   const isCommunity = !route || route === "c";
   document.querySelectorAll(".nav__link").forEach((a) => {
     const k = a.dataset.nav;
-    a.classList.toggle("on", (k === "events" && isEvents) || (k === "home" && isCommunity));
+    a.classList.toggle("on", (k === "events" && isEvents) || (k === "visa" && isVisa) || (k === "home" && isCommunity));
   });
   const evStatus = arg === "ended" ? "ended" : "ongoing";
   document.querySelectorAll(".drawer__item").forEach((a) => {
@@ -569,6 +572,8 @@ function buildDrawer() {
   html += `<div class="drawer__sec">이벤트</div>
     <a class="drawer__item" href="#/events/ongoing" data-dnav="ev:ongoing"><span class="drawer__ico" style="background:#FFEEDF;color:var(--brand-orange)">🎟️</span>진행 중 이벤트</a>
     <a class="drawer__item" href="#/events/ended" data-dnav="ev:ended"><span class="drawer__ico" style="background:var(--bg-soft);color:var(--sub)">🗂️</span>종료된 이벤트</a>
+    <div class="drawer__sec">Tools</div>
+    <a class="drawer__item" href="#/visa" data-dnav="visa"><span class="drawer__ico" style="background:#E6F4FF;color:var(--brand-blue)">🛂</span>Visa Calculator</a>
     <a class="btn btn--blue btn--full drawer__app" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the app ${IC.chevR}</a>`;
   nav.innerHTML = html;
   nav.querySelectorAll("a[href^='#/']").forEach((a) => a.addEventListener("click", closeDrawer));
