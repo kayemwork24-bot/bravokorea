@@ -167,7 +167,9 @@ img { display: block; max-width: 100%; }
 .snav a:hover { background: var(--bg-soft); }
 .snav a.on { background: var(--blue-tint); color: var(--blue-ink); }
 .snav__ico { width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font-size: 15px; font-weight: 800; flex: none; }
-.side__app { margin-top: 18px; }
+.side__app { margin-top: 18px; padding: 22px 18px; }
+.side__app .app-logo { margin-bottom: 18px; }
+.side__app .app-logo .brand-svg { height: 27px; }
 
 /* --------------------------------------------------- mobile category tiles */
 .mcats { display: none; gap: 4px; overflow-x: auto; padding: 10px 0 18px; margin-bottom: 8px; scrollbar-width: none; min-width: 0; border-bottom: 1px solid var(--line); }
@@ -178,7 +180,7 @@ img { display: block; max-width: 100%; }
 .mtile__lab { font-size: 12px; font-weight: 600; color: var(--ink-2); white-space: nowrap; }
 
 /* --------------------------------------------------------------- feed */
-.feed__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.feed__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 .feed__head > div:first-child { flex: 1 1 auto; min-width: 0; }
 .feed__ttl { font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin: 0; line-height: 1.25; }
 .feed__ttl .cico { margin-right: 8px; }
@@ -389,21 +391,6 @@ img { display: block; max-width: 100%; }
 .evt-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .evt-card__going { font-size: 12.5px; color: var(--sub); }
 .evt-card__going b { color: var(--ink); font-size: 14px; }
-
-/* events segmented tabs */
-.evt-tabs { display: inline-flex; gap: 4px; background: var(--bg-soft); padding: 5px; border-radius: 13px; margin: 0 auto 24px; }
-.evt-tabs { display: flex; width: fit-content; }
-.events > .evt-tabs { margin-left: auto; margin-right: auto; }
-.evt-tab { font-size: 13.5px; font-weight: 700; color: var(--sub); padding: 9px 16px; border-radius: 9px; transition: background .15s, color .15s; white-space: nowrap; }
-.evt-tab:hover { color: var(--ink); }
-.evt-tab.on { background: #fff; color: var(--ink); box-shadow: var(--shadow-sm); }
-
-/* ended events: muted look + disabled CTA */
-.evt-card--ended .evt-card__banner { filter: saturate(.35) brightness(.92); }
-.evt-card--ended .evt-card__price { background: rgba(0,0,0,.4); }
-.evt-card--ended:hover { transform: none; box-shadow: var(--shadow-sm); }
-.evt-card--ended .evt-card__date { color: var(--sub); }
-.btn.is-disabled { background: var(--bg-soft); color: var(--meta); cursor: default; pointer-events: none; }
 
 /* --------------------------------------------------------------- share modal / sheet */
 .sheet-back { position: fixed; inset: 0; z-index: 100; background: rgba(15,17,25,.44); backdrop-filter: blur(3px);

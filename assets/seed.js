@@ -69,28 +69,6 @@ const EVENTS = [
     place: "북한산 우이역 집결", price: "무료",
     desc: "정상에서 보는 서울 일출. 중급 난이도, 물과 등산화 필수. 하산 후 해장국 있어요.",
     going: 64, cap: 80 },
-
-  /* ---- 종료된 이벤트 (ended) ---- */
-  { id: "ev7", emoji: "🌮", type: "페스티벌", color: "#FF6400", ended: true,
-    title: "Itaewon Global Food Festival", date: "6월 14일 (토)", time: "오후 12:00",
-    place: "이태원 · Itaewon-ro", price: "무료",
-    desc: "30개국 길거리 음식 부스. 올여름 최대 규모로 성황리에 마감했습니다. 후기 감사해요!",
-    going: 480, cap: 480 },
-  { id: "ev8", emoji: "🤝", type: "네트워킹", color: "#008CFF", ended: true,
-    title: "Seoul Startup Networking Night", date: "6월 20일 (금)", time: "저녁 7:00",
-    place: "강남 · Maru180", price: "무료",
-    desc: "외국인 창업자·개발자 210명이 모였습니다. 다음 시즌 라운드는 앱에서 먼저 공지돼요.",
-    going: 210, cap: 210 },
-  { id: "ev9", emoji: "📚", type: "클래스", color: "#7A5CFF", ended: true,
-    title: "4-Week Korean Bootcamp (Spring)", date: "6월 7일 (토)", time: "오전 10:00",
-    place: "온라인 · Zoom", price: "₩120,000",
-    desc: "왕초보 대상 4주 집중 과정. 수료율 92%로 종료. 가을 기수는 대기 신청을 받고 있어요.",
-    going: 96, cap: 100 },
-  { id: "ev10", emoji: "🚡", type: "데이트립", color: "#0FB5A6", ended: true,
-    title: "Nami Island Day Trip", date: "6월 28일 (토)", time: "오전 8:00",
-    place: "남이섬 · 가평 집결", price: "₩45,000",
-    desc: "당일 왕복 버스 + 입장권 포함으로 진행했던 봄 나들이. 45석 조기 마감되었습니다.",
-    going: 45, cap: 45 },
 ];
 
 const SEED_POSTS = [

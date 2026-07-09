@@ -225,18 +225,12 @@ function sidebarEl(activeId, activeEvents) {
   const evNav = el("nav", "snav");
   const ong = el("a", activeEvents === "ongoing" ? "on" : "", `<span class="snav__ico" style="background:#FFEEDF;color:var(--brand-orange)">🎟️</span>진행 중 이벤트`);
   ong.href = "#/events/ongoing";
-  const end = el("a", activeEvents === "ended" ? "on" : "", `<span class="snav__ico" style="background:var(--bg-soft);color:var(--sub)">🗂️</span>종료된 이벤트`);
-  end.href = "#/events/ended";
-  evNav.append(ong, end);
+  evNav.append(ong);
   side.appendChild(evNav);
 
-  const totalSignups = Object.values(TRACK).reduce((a, f) => a + f.signups, 0);
   const app = el("div", "panel panel--app side__app");
   app.innerHTML = `<div class="app-logo">${BRAND_LOGO}</div>
-    <div class="panel__h" style="color:#fff">앱에서 계속 이어가세요</div>
-    <p class="panel__p">DM · 인증 매물 · 동네 모임까지. 이 커뮤니티가 앱의 현관입니다.</p>
-    <div class="mrow"><span>이 보드발 가입</span><span class="v">${nfmt(totalSignups)}</span></div>
-    <a class="btn btn--white btn--full" href="${APP_DEEPLINK}" target="_blank" rel="noopener" style="margin-top:12px">Get the app ${IC.chevR}</a>`;
+    <a class="btn btn--white btn--full" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the app ${IC.chevR}</a>`;
   side.appendChild(app);
   return side;
 }
@@ -460,27 +454,20 @@ function renderDashboard() {
 }
 
 /* --------------------------------------------------------------- EVENTS */
-function renderEvents(status) {
-  status = status === "ended" ? "ended" : "ongoing";
-  const list = EVENTS.filter((e) => status === "ended" ? e.ended : !e.ended);
+function renderEvents() {
+  const list = EVENTS.filter((e) => !e.ended);
 
   app.innerHTML = "";
   const wrap = el("div", "wrap");
   const layout = el("div", "layout layout--events");
-  layout.appendChild(sidebarEl(null, status));
+  layout.appendChild(sidebarEl(null, "ongoing"));
 
   const page = el("section", "feed events");
   page.innerHTML = `
     <div class="events__hero">
       <div class="events__ey">🎟️ Bravo Korea Events</div>
-      <h1 class="events__title">${status === "ended" ? "종료된 이벤트" : "진행 중인 이벤트"}</h1>
-      <p class="events__sub">${status === "ended"
-        ? "지난 밋업 · 클래스 · 페스티벌 기록이에요. 다음 시즌 소식은 앱에서 가장 먼저 받아보세요."
-        : "외국인들을 위한 밋업 · 클래스 · 세미나. 마음에 드는 이벤트에 참가하고, 더 많은 소식은 앱에서 받아보세요."}</p>
-    </div>
-    <div class="evt-tabs">
-      <a class="evt-tab ${status==="ongoing"?"on":""}" href="#/events/ongoing">🎟️ 진행 중 이벤트</a>
-      <a class="evt-tab ${status==="ended"?"on":""}" href="#/events/ended">🗂️ 종료된 이벤트</a>
+      <h1 class="events__title">진행 중인 이벤트</h1>
+      <p class="events__sub">외국인들을 위한 밋업 · 클래스 · 세미나. 마음에 드는 이벤트에 참가하고, 더 많은 소식은 앱에서 받아보세요.</p>
     </div>
     <div class="evt-grid" id="evt-grid"></div>`;
 
@@ -488,24 +475,22 @@ function renderEvents(status) {
   if (!list.length) grid.appendChild(el("div", "empty", `<div class="empty__em">🗓️</div>표시할 이벤트가 없어요.`));
   list.forEach((e) => {
     const pct = Math.min(100, Math.round((e.going / e.cap) * 100));
-    const card = el("article", "evt-card" + (e.ended ? " evt-card--ended" : ""));
+    const card = el("article", "evt-card");
     card.innerHTML = `
       <div class="evt-card__banner" style="background:linear-gradient(135deg, ${e.color}, ${e.color}CC)">
         <span class="evt-card__emoji">${e.emoji}</span>
         <span class="evt-card__type">${esc(e.type)}</span>
-        <span class="evt-card__price">${e.ended ? "종료" : esc(e.price)}</span>
+        <span class="evt-card__price">${esc(e.price)}</span>
       </div>
       <div class="evt-card__body">
         <div class="evt-card__date">📅 ${esc(e.date)} · ${esc(e.time)}</div>
         <h3 class="evt-card__title">${esc(e.title)}</h3>
         <div class="evt-card__place">📍 ${esc(e.place)}</div>
         <p class="evt-card__desc">${esc(e.desc)}</p>
-        <div class="evt-card__meter"><i style="width:${pct}%;background:${e.ended ? "var(--meta)" : e.color}"></i></div>
+        <div class="evt-card__meter"><i style="width:${pct}%;background:${e.color}"></i></div>
         <div class="evt-card__foot">
-          <span class="evt-card__going"><b>${e.going}</b> / ${e.cap} ${e.ended ? "참가 · 마감" : "참가"}</span>
-          ${e.ended
-            ? `<span class="btn btn--soft btn--sm is-disabled">종료됨</span>`
-            : `<a class="btn btn--blue btn--sm" href="${APP_DEEPLINK}?event_id=${e.id}" target="_blank" rel="noopener">앱에서 참가</a>`}
+          <span class="evt-card__going"><b>${e.going}</b> / ${e.cap} 참가</span>
+          <a class="btn btn--blue btn--sm" href="${APP_DEEPLINK}?event_id=${e.id}" target="_blank" rel="noopener">앱에서 참가</a>
         </div>
       </div>`;
     grid.appendChild(card);
@@ -571,7 +556,6 @@ function buildDrawer() {
   });
   html += `<div class="drawer__sec">이벤트</div>
     <a class="drawer__item" href="#/events/ongoing" data-dnav="ev:ongoing"><span class="drawer__ico" style="background:#FFEEDF;color:var(--brand-orange)">🎟️</span>진행 중 이벤트</a>
-    <a class="drawer__item" href="#/events/ended" data-dnav="ev:ended"><span class="drawer__ico" style="background:var(--bg-soft);color:var(--sub)">🗂️</span>종료된 이벤트</a>
     <div class="drawer__sec">Tools</div>
     <a class="drawer__item" href="#/visa" data-dnav="visa"><span class="drawer__ico" style="background:#E6F4FF;color:var(--brand-blue)">🛂</span>Visa Calculator</a>
     <a class="btn btn--blue btn--full drawer__app" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the app ${IC.chevR}</a>`;
