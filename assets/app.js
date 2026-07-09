@@ -252,7 +252,7 @@ function sidebarEl(activeId, activeEvents) {
 
   const app = el("div", "panel panel--app side__app");
   app.innerHTML = `<div class="app-logo">${BRAND_LOGO}</div>
-    <a class="btn btn--white btn--full" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Download Bravo Korea App ${IC.chevR}</a>`;
+    <a class="btn btn--white btn--full" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the App ${IC.chevR}</a>`;
   side.appendChild(app);
   return side;
 }
@@ -692,7 +692,7 @@ function buildDrawer() {
     <a class="drawer__item" href="#/events/ongoing" data-dnav="ev:ongoing"><span class="drawer__ico" style="background:#FFEEDF;color:var(--brand-orange)">🎟️</span>진행 중 이벤트</a>
     <div class="drawer__sec">도구</div>
     <a class="drawer__item" href="#/visa" data-dnav="visa"><span class="drawer__ico" style="background:#E6F4FF;color:var(--brand-blue)">🛂</span>비자점수계산기</a>
-    <a class="btn btn--blue btn--full drawer__app" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Download Bravo KoreaApp ${IC.chevR}</a>`;
+    <a class="btn btn--blue btn--full drawer__app" href="${APP_DEEPLINK}" target="_blank" rel="noopener">Get the App ${IC.chevR}</a>`;
   nav.innerHTML = html;
   nav.querySelectorAll("a[href^='#/']").forEach((a) => a.addEventListener("click", closeDrawer));
 }
