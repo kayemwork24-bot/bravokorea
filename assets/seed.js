@@ -51,6 +51,7 @@ const MIN = 60 * 1000;
 const EVENTS = [
   {
     id: "remit-fee-zero",
+    image: "assets/event-remit.png",
     type: "송금 혜택", status: "ongoing",
     color: "#2E6BF6", accent: "#1E56DC",
     badge: "송금 수수료 0원",
@@ -78,13 +79,14 @@ const EVENTS = [
   },
   {
     id: "loan-consult-point",
+    image: "assets/event-loan.png",
     type: "대출 혜택", status: "ongoing",
     color: "#2E6BF6", accent: "#1E56DC",
     badge: "포인트 10,000원",
-    title: "대출 한도 상담하면 포인트 10,000원 받을 기회!",
+    title: "대출 상담하면 포인트 10,000원 받을 기회!",
     summary: "외국인을 위한 대출 상담 — 모국어로 원하는 시간에 상담하고, 대출 실행까지 완료하면 포인트 10,000원.",
     period: "2026.06.16 ~ 2026.12.15",
-    target: "이벤트 기간 내 '참여하기'를 통해 대출 한도 상담 후 대출을 신청한 고객",
+    target: "이벤트 기간 내 '참여하기'를 통해 대출 상담 후 대출을 신청한 고객",
     provider: "Bravo Korea 금융센터",
     highlight: "포인트 10,000원 (기간 내 최초 1회 대출 실행 완료 시 지급)",
     cta: "참여하기",
@@ -93,7 +95,7 @@ const EVENTS = [
       "이벤트 기간 내 최초 1회 대출 실행이 완료되면 포인트 10,000원을 지급합니다.",
     ],
     steps: [
-      { title: "대출 한도 상담 신청하기", desc: "휴대폰번호 입력 및 상담 희망 시간 선택" },
+      { title: "대출 상담 신청하기", desc: "휴대폰번호 입력 및 상담 희망 시간 선택" },
       { title: "전문 상담직원의 전화 받기", desc: "모국어로 희망 시간에 상담 가능" },
       { title: "상담 후 대출 신청하기", desc: "대출 신청 후 대출 실행이 완료되면 포인트 지급" },
     ],

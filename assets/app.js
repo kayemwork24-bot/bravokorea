@@ -158,12 +158,14 @@ function renderFeed(catId) {
 
   const feed = el("section", "feed");
 
-  // mobile hero banner (og image) — above category tiles, mobile only; taps through to the app
-  const hero = el("a", "mhero");
-  hero.href = APP_DEEPLINK; hero.target = "_blank"; hero.rel = "noopener";
-  hero.setAttribute("aria-label", "Bravo Korea — get the app");
-  hero.innerHTML = `<img src="assets/og.png?v=19" alt="Bravo Korea — community for foreigners living in Korea" width="1200" height="630" loading="eager">`;
-  feed.appendChild(hero);
+  // mobile hero banner (og image) — only on 전체 (no category); mobile only; taps through to the app
+  if (!cat) {
+    const hero = el("a", "mhero");
+    hero.href = APP_DEEPLINK; hero.target = "_blank"; hero.rel = "noopener";
+    hero.setAttribute("aria-label", "Bravo Korea — get the app");
+    hero.innerHTML = `<img src="assets/og.png?v=19" alt="Bravo Korea — community for foreigners living in Korea" width="1200" height="630" loading="eager">`;
+    feed.appendChild(hero);
+  }
 
   // mobile category tiles
   const mcats = el("div", "mcats");
@@ -182,7 +184,7 @@ function renderFeed(catId) {
     const vb = el("a", "visa-banner");
     vb.href = "#/visa";
     vb.innerHTML = `<span class="visa-banner__ico">🛂</span>
-      <span class="visa-banner__tx"><span class="visa-banner__t">내 비자 점수, 3분이면 끝</span>
+      <span class="visa-banner__tx"><span class="visa-banner__t">내 비자 점수 3분 만에 알아보기</span>
       <span class="visa-banner__s">D-10 · E-7-4 · F-2-7 실시간 계산</span></span>
       <span class="visa-banner__go">${IC.chevR}</span>`;
     feed.appendChild(vb);
@@ -201,7 +203,7 @@ function renderFeed(catId) {
     feed.appendChild(fbar);
   } else {
     const head = el("div", "feed__head");
-    head.innerHTML = `<div><h1 class="feed__ttl">커뮤니티 추천글 <small>Community picks</small></h1>
+    head.innerHTML = `<div><h1 class="feed__ttl">커뮤니티 추천글</h1>
       <div class="feed__meta">${list.length} posts from foreigners living in Korea</div></div>`;
     head.appendChild(sortBtn());
     feed.appendChild(head);
@@ -293,15 +295,15 @@ function renderDetail(id) {
     </div>
     <div class="detail__body">${p.body.split("\n\n").map(par=>`<p>${esc(par)}</p>`).join("")}</div>
     ${media}
-    <div class="sharebar">
-      <div class="sharebar__h">이 글 공유하기 <span>Share</span></div>
-      ${shareRowHTML()}
-    </div>
     <div class="cta-band">
       <div class="app-logo">${BRAND_LOGO}</div>
-      <div class="cta-band__h">Loved this? The conversation continues in the app.</div>
-      <div class="cta-band__p">Reply to ${esc(p.author.split(" ")[0])}, DM members near you, and get notified the moment someone answers your question.</div>
-      <a class="btn btn--white" href="${appDownloadLink(p.id)}" target="_blank" rel="noopener">Open in Bravo Korea App ${IC.chevR}</a>
+      <div class="cta-band__h">Everyone here is in Bravo Korea App.</div>
+      <div class="cta-band__p">Get More Info and Benefits</div>
+      <a class="btn btn--white" href="${appDownloadLink(p.id)}" target="_blank" rel="noopener">Join Now ${IC.chevR}</a>
+    </div>
+    <div class="sharebar sharebar--sm">
+      <div class="sharebar__h">이 글 공유하기 <span>Share</span></div>
+      ${shareRowHTML()}
     </div>
     <div class="actionbar">
       <button class="act ${liked?"liked":""}" data-like>${IC.like}<span>${nfmt(p.likes+(liked?1:0))}</span></button>
@@ -391,13 +393,7 @@ function openShare(p) {
       <p class="sheet__p">공유 링크는 <b>Bravo Korea 앱 딥링크</b>이며, 이 글의 <b>post_id</b>가 파라미터로 실립니다. 링크로 들어온 설치·가입이 어떤 글에서 왔는지 추적됩니다.</p>
       <div class="deeplink"><code title="${web}">${esc(web)}</code><button class="btn btn--dark copy" data-copy="${esc(web)}">복사</button></div>
       <div class="applink-line">post_id: <span>${esc(p.id)}</span> · 딥링크에 자동 첨부됨</div>
-      <div class="share-row">
-        <button class="share-ico" data-ch="KakaoTalk"><span class="b" style="background:#FEE500;color:#000">💬</span>Kakao</button>
-        <button class="share-ico" data-ch="Instagram"><span class="b" style="background:#E1306C">📷</span>Story</button>
-        <button class="share-ico" data-ch="X"><span class="b" style="background:#111">✕</span>X</button>
-        <button class="share-ico" data-ch="WhatsApp"><span class="b" style="background:#25D366">🟢</span>WhatsApp</button>
-        <button class="share-ico" data-ch="More"><span class="b" style="background:var(--blue)">🔗</span>More</button>
-      </div>
+      ${shareRowHTML()}
       <div class="track-note">📊&nbsp;<div><b>성과 미리보기:</b> 이 글은 <b>${f.shares}회 공유</b>로 <b>${f.signups}명 가입</b>을 만들었습니다. 새 공유는 <a href="#/track">추적 대시보드</a>에 실시간 반영됩니다.</div></div>
       <button class="btn btn--soft btn--full" id="sheet-close" style="margin-top:16px">닫기</button>
     </div>`;
@@ -410,7 +406,52 @@ function openShare(p) {
     e.currentTarget.textContent = "복사됨 ✓"; e.currentTarget.classList.add("ok");
     countShare(p);
   };
-  back.querySelectorAll("[data-ch]").forEach((b) => b.onclick = () => { countShare(p); copy(web); toast(`${b.dataset.ch}에 공유 — 링크 복사됨 🔗`); close(); });
+  back.querySelectorAll(".shbtn").forEach((b) => b.onclick = () => { shareTo(b.dataset.ch, p); });
+}
+
+/* --------------------------------------------------- social share (real) */
+const KAKAO_JS_KEY = ""; // ← paste your Kakao JavaScript key to enable KakaoTalk sharing
+const SHARE_CH = [
+  { id: "kakao",    l: "Kakao",    cls: "kakao" },
+  { id: "facebook", l: "Facebook", cls: "fb" },
+  { id: "x",        l: "X",        cls: "x" },
+  { id: "line",     l: "LINE",     cls: "line" },
+  { id: "sms",      l: "SMS",      cls: "sms" },
+];
+function shIcon(id) {
+  return id==="kakao" ? "💬" : id==="facebook" ? "f" : id==="x" ? "𝕏" : id==="line" ? "LINE" : "✉";
+}
+function shareRowHTML() {
+  return `<div class="share-row2">` + SHARE_CH.map(c =>
+    `<button class="shbtn" data-ch="${c.id}" aria-label="${c.l}">
+       <span class="shbtn__i shbtn__i--${c.cls}">${shIcon(c.id)}</span>
+       <span class="shbtn__l">${c.l}</span>
+     </button>`).join("") + `</div>`;
+}
+function shareTo(channel, p) {
+  const url = appDownloadLink(p.id);                     // Airbridge deeplink + post_id
+  const text = `"${p.title}" — Bravo Korea`;
+  countShare(p);                                          // attribution
+  const u = encodeURIComponent(url), t = encodeURIComponent(text);
+  if (channel === "kakao") return shareKakao(p, url, text);
+  if (channel === "facebook") return void window.open(`https://www.facebook.com/sharer/sharer.php?u=${u}`, "_blank", "noopener,width=600,height=640");
+  if (channel === "x")        return void window.open(`https://twitter.com/intent/tweet?text=${t}&url=${u}`, "_blank", "noopener,width=600,height=640");
+  if (channel === "line")     return void window.open(`https://social-plugins.line.me/lineit/share?url=${u}`, "_blank", "noopener,width=600,height=640");
+  if (channel === "sms")      { location.href = `sms:?&body=${encodeURIComponent(text + " " + url)}`; return; }
+}
+function shareKakao(p, url, text) {
+  if (window.Kakao && Kakao.isInitialized && Kakao.isInitialized() && Kakao.Share) {
+    Kakao.Share.sendDefault({
+      objectType: "feed",
+      content: { title: p.title, description: excerptOf(p).slice(0, 80),
+        imageUrl: "https://www.bravokorea.app/og.png",
+        link: { mobileWebUrl: url, webUrl: url } },
+      buttons: [{ title: "앱에서 열기", link: { mobileWebUrl: url, webUrl: url } }],
+    });
+  } else {
+    copy(url);
+    toast("카카오 공유는 JS 키 설정 후 활성화돼요 — 링크를 복사했어요 🔗");
+  }
 }
 
 function countShare(p) {
@@ -494,7 +535,6 @@ function renderEvents() {
   const page = el("section", "feed events");
   page.innerHTML = `
     <div class="events__hero">
-      <div class="events__ey">🎟️ Bravo Korea Events</div>
       <h1 class="events__title">진행 중인 이벤트</h1>
       <p class="events__sub">Bravo Korea가 준비한 해외송금 · 금융 혜택과 프로모션. 마음에 드는 혜택을 앱에서 바로 받아보세요.</p>
     </div>
@@ -563,7 +603,9 @@ function renderEventDetail(id) {
   const d = el("article", "center evd");
   d.innerHTML = `
     <a class="back-link" href="#/events">${IC.back} 이벤트 목록</a>
-    <div class="evd__hero" style="background:${eventGradient(e)}">
+    ${e.image
+      ? `<div class="evd__media"><img src="${e.image}" alt="${esc(e.title)}" loading="eager"></div>`
+      : `<div class="evd__hero" style="background:${eventGradient(e)}">
       <div class="evd__pills">
         <span class="evd__type">${esc(e.type)}</span>
         <span class="evd__status">${EV_STATUS[e.status] || "진행중"}</span>
@@ -571,7 +613,7 @@ function renderEventDetail(id) {
       <div class="evd__badge">${esc(e.badge)}</div>
       <h1 class="evd__title">${esc(e.title)}</h1>
       <div class="evd__partner">${esc(e.provider)}</div>
-    </div>
+    </div>`}
 
     <dl class="evd__facts">
       <div class="evd__fact"><dt>📅 이벤트 기간</dt><dd>${esc(e.period)}</dd></div>
@@ -673,5 +715,8 @@ $("#drawer").addEventListener("click", (e) => { if (e.target.id === "drawer") cl
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeDrawer(); });
 
 /* ------------------------------------------------------------------ boot */
+if (window.Kakao && KAKAO_JS_KEY && !window.Kakao.isInitialized()) {
+  try { window.Kakao.init(KAKAO_JS_KEY); } catch (e) {}
+}
 window.addEventListener("hashchange", render);
 render();

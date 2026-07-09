@@ -175,11 +175,14 @@ img { display: block; max-width: 100%; }
 .side__app .app-logo { margin-bottom: 18px; }
 .side__app .app-logo .brand-svg { height: 27px; }
 
-/* ---------------------------------------- mobile hero banner (og image) */
-.mhero { display: none; }  /* desktop: hidden */
+/* ---------------------------------------- hero banner (og image) */
+/* desktop: compact cover-cropped band (keeps the centered wordmark, small footprint) */
+.mhero { display: block; margin: 0 0 18px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
+.mhero img { width: 100%; height: 150px; object-fit: cover; object-position: center; display: block; }
 @media (max-width: 820px) {
-  .mhero { display: block; margin: 6px 0 14px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
-  .mhero img { width: 100%; height: auto; aspect-ratio: 1200 / 500; object-fit: cover; }
+  /* mobile: full banner (unchanged) */
+  .mhero { margin: 6px 0 14px; }
+  .mhero img { height: auto; aspect-ratio: 1200 / 500; }
 }
 
 /* --------------------------------------------------- mobile category tiles */
@@ -408,7 +411,8 @@ img { display: block; max-width: 100%; }
 .evt-card__foot .btn { flex: none; pointer-events: none; }
 
 /* event detail (benefit promotion) */
-.evd { }
+.evd { padding-inline: 20px; }
+@media (max-width: 560px) { .evd { padding-inline: 16px; } }
 .evd__hero { position: relative; overflow: hidden; border-radius: 20px; padding: 30px 26px; color: #fff; margin: 4px 0 22px; }
 .evd__pills { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
 .evd__type { font-size: 12px; font-weight: 800; letter-spacing: .02em; background: rgba(255,255,255,.22); backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 999px; }
@@ -417,6 +421,8 @@ img { display: block; max-width: 100%; }
 .evd__badge { display: inline-block; font-size: clamp(32px, 6vw, 48px); font-weight: 900; letter-spacing: -.02em; line-height: 1.05; margin-bottom: 14px; text-shadow: 0 3px 16px rgba(0,0,0,.18); }
 .evd__title { font-size: clamp(21px, 3.4vw, 28px); font-weight: 800; line-height: 1.32; letter-spacing: -.01em; margin: 0 0 12px; }
 .evd__partner { font-size: 13.5px; font-weight: 600; opacity: .9; }
+.evd__media { margin: 4px 0 22px; border-radius: 20px; overflow: hidden; border: 1px solid var(--line-2); background: var(--card, #fff); }
+.evd__media img { display: block; width: 100%; height: auto; }
 .evd__facts { border: 1px solid var(--line); border-radius: 16px; overflow: hidden; margin-bottom: 22px; }
 .evd__fact { display: flex; gap: 14px; padding: 15px 18px; border-bottom: 1px solid var(--line); }
 .evd__fact:last-child { border-bottom: none; }
@@ -480,6 +486,31 @@ img { display: block; max-width: 100%; }
 .applink-line span { font-family: var(--mono); color: var(--ink-2); }
 .share-row { display: flex; gap: 8px; margin: 18px 0 4px; }
 .share-ico { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; color: var(--ink-2); }
+
+/* social share bar (post detail, above CTA) + share sheet */
+.sharebar { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+.sharebar__h { font-size: 13.5px; font-weight: 800; color: var(--ink-2); margin-bottom: 14px; }
+.sharebar__h span { font-size: 11px; font-weight: 700; color: var(--meta); letter-spacing: .04em; text-transform: uppercase; margin-left: 6px; }
+.share-row2 { display: flex; gap: 8px; margin: 16px 0 2px; }
+.shbtn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.shbtn__i { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+  color: #fff; font-weight: 800; font-size: 22px; transition: transform .14s var(--ease), box-shadow .18s; }
+.shbtn:hover .shbtn__i { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.shbtn:active .shbtn__i { transform: scale(.92); }
+.shbtn__i--kakao { background: #FEE500; color: #3A1D1D; }
+.shbtn__i--fb    { background: #1877F2; font-family: Georgia, "Times New Roman", serif; }
+.shbtn__i--x     { background: #000; }
+.shbtn__i--line  { background: #06C755; font-size: 12px; letter-spacing: .01em; }
+.shbtn__i--sms   { background: #34C759; }
+.shbtn__l { font-size: 11.5px; font-weight: 700; color: var(--ink-2); }
+@media (max-width: 420px) { .shbtn__i { width: 48px; height: 48px; font-size: 20px; } .shbtn__l { font-size: 11px; } }
+
+/* compact share bar (below CTA band) — ~30% smaller icons */
+.sharebar--sm .shbtn__i { width: 36px; height: 36px; font-size: 15px; }
+.sharebar--sm .shbtn__i--line { font-size: 9px; }
+.sharebar--sm .shbtn__l { font-size: 10.5px; }
+.sharebar--sm .share-row2 { gap: 6px; }
+@media (max-width: 420px) { .sharebar--sm .shbtn__i { width: 34px; height: 34px; font-size: 14px; } }
 .share-ico .b { width: 50px; height: 50px; border-radius: 15px; display: grid; place-items: center; color: #fff; font-size: 21px; transition: transform .14s var(--ease); }
 .share-ico:hover .b { transform: translateY(-2px); }
 .track-note { display: flex; gap: 9px; align-items: flex-start; background: var(--blue-tint); border-radius: 13px; padding: 12px 14px; font-size: 12.5px; color: #234; line-height: 1.5; margin-top: 16px; }
